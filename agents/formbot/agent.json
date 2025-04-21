@@ -1,0 +1,29 @@
+{
+  "name": "FormBot",
+  "version": "0.1.0",
+  "description": "Form auto-submission specialist that handles vendor portal interactions",
+  "purpose": "To automatically fill out and submit vendor RMA forms",
+  "capabilities": [
+    "Form field recognition",
+    "Auto-population of RMA data",
+    "File attachment handling",
+    "Captcha and verification bypass assistance"
+  ],
+  "tools": [
+    "form_analyzer",
+    "document_upload",
+    "captcha_solver"
+  ],
+  "health": {
+    "error_threshold": 3,
+    "retry_delay_seconds": 30,
+    "max_retries": 5,
+    "failsafe_agent": "Failsafe"
+  },
+  "dependencies": [
+    "TraceRoute",
+    "Ledger"
+  ],
+  "author": "Claimr Team",
+  "project": "Claimr RMA Automation Platform"
+}

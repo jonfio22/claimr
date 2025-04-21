@@ -1,0 +1,29 @@
+{
+  "name": "ReqWest",
+  "version": "0.1.0",
+  "description": "RMA intake agent that collects initial information from technicians",
+  "purpose": "To initiate and validate RMA requests from technicians",
+  "capabilities": [
+    "Collect equipment information",
+    "Validate serial numbers and product data",
+    "Initiate RMA ticket creation",
+    "Route to appropriate vendor specialist"
+  ],
+  "tools": [
+    "supabase_storage",
+    "email_notification",
+    "vendor_lookup"
+  ],
+  "health": {
+    "error_threshold": 3,
+    "retry_delay_seconds": 30,
+    "max_retries": 5,
+    "failsafe_agent": "Failsafe"
+  },
+  "dependencies": [
+    "TraceRoute",
+    "Ledger"
+  ],
+  "author": "Claimr Team",
+  "project": "Claimr RMA Automation Platform"
+}

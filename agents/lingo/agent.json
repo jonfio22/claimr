@@ -1,0 +1,29 @@
+{
+  "name": "Lingo",
+  "version": "0.1.0",
+  "description": "Speech and translation assistant for multilingual RMA processing",
+  "purpose": "To provide translation and language services for international vendors",
+  "capabilities": [
+    "Real-time translation",
+    "Technical terminology adaptation",
+    "Cultural context awareness",
+    "Voice transcription assistance"
+  ],
+  "tools": [
+    "translation_api",
+    "terminology_database",
+    "speech_recognition"
+  ],
+  "health": {
+    "error_threshold": 3,
+    "retry_delay_seconds": 30,
+    "max_retries": 5,
+    "failsafe_agent": "Failsafe"
+  },
+  "dependencies": [
+    "TraceRoute",
+    "FormBot"
+  ],
+  "author": "Claimr Team",
+  "project": "Claimr RMA Automation Platform"
+}

@@ -1,0 +1,29 @@
+{
+  "name": "TraceRoute",
+  "version": "0.1.0",
+  "description": "Vendor navigation specialist that routes RMA requests to the correct vendor systems",
+  "purpose": "To navigate complex vendor systems and determine the optimal path for RMA submission",
+  "capabilities": [
+    "Vendor portal identification",
+    "Routing logic for different equipment types",
+    "Partner system API integration",
+    "Navigation path optimization"
+  ],
+  "tools": [
+    "vendor_database",
+    "path_optimizer",
+    "api_connector"
+  ],
+  "health": {
+    "error_threshold": 3,
+    "retry_delay_seconds": 30,
+    "max_retries": 5,
+    "failsafe_agent": "Failsafe"
+  },
+  "dependencies": [
+    "FormBot",
+    "Ledger"
+  ],
+  "author": "Claimr Team",
+  "project": "Claimr RMA Automation Platform"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Echo",
+  "version": "0.1.0",
+  "description": "Confirmation and receipt agent that provides status updates and documentation",
+  "purpose": "To keep technicians informed about RMA status and provide documentation",
+  "capabilities": [
+    "Status notification generation",
+    "Email confirmation sending",
+    "RMA documentation creation",
+    "Receipt and proof of submission archiving"
+  ],
+  "tools": [
+    "email_sender",
+    "pdf_generator",
+    "notification_manager"
+  ],
+  "health": {
+    "error_threshold": 3,
+    "retry_delay_seconds": 30,
+    "max_retries": 5,
+    "failsafe_agent": "Failsafe"
+  },
+  "dependencies": [
+    "Ledger"
+  ],
+  "author": "Claimr Team",
+  "project": "Claimr RMA Automation Platform"
+}

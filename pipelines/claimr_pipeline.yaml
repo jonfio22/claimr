@@ -1,0 +1,158 @@
+# Claimr RMA Automation Pipeline Definition
+# This pipeline orchestrates the flow of an RMA through the Claimr agent mesh
+
+pipeline:
+  name: claimr-rma-automation-pipeline
+  description: "Automates the RMA process for AV equipment by orchestrating Claimr agents"
+
+inputs:
+  - name: serial_number
+    type: String
+    description: "Equipment serial number"
+  - name: model_number
+    type: String
+    description: "Equipment model number"
+  - name: issue_description
+    type: String
+    description: "Description of the equipment issue"
+  - name: vendor
+    type: String
+    description: "Equipment vendor name (e.g., QSC, Biamp, Shure)"
+  - name: submitted_by
+    type: String
+    description: "Email of the technician submitting the RMA"
+
+outputs:
+  - name: rma_id
+    type: String
+    description: "The UUID of the created RMA request"
+  - name: vendor_rma_id
+    type: String
+    description: "The vendor-provided RMA ID"
+  - name: success
+    type: Boolean
+    description: "Whether the RMA process completed successfully"
+
+components:
+  - name: reqwest-component
+    description: "Creates an RMA request in the system"
+    inputs:
+      - name: serial_number
+        type: String
+      - name: model_number
+        type: String
+      - name: issue_description
+        type: String
+      - name: vendor
+        type: String
+      - name: submitted_by
+        type: String
+    outputs:
+      - name: rma_id
+        type: String
+    implementation:
+      container:
+        image: "gcr.io/claimr/reqwest-component:latest"
+        command: ["python", "-m", "pipelines.components.reqwest"]
+        args: [
+          "--serial_number", "{{inputs.serial_number}}",
+          "--model_number", "{{inputs.model_number}}",
+          "--issue_description", "{{inputs.issue_description}}",
+          "--vendor", "{{inputs.vendor}}",
+          "--submitted_by", "{{inputs.submitted_by}}",
+          "--rma_id_output_path", "{{outputs.rma_id}}"
+        ]
+
+  - name: traceroute-component
+    description: "Routes the RMA to the appropriate handler based on vendor"
+    inputs:
+      - name: rma_id
+        type: String
+    outputs:
+      - name: next_step
+        type: String
+    implementation:
+      container:
+        image: "gcr.io/claimr/traceroute-component:latest"
+        command: ["python", "-m", "pipelines.components.traceroute"]
+        args: [
+          "--rma_id", "{{inputs.rma_id}}",
+          "--next_step_output_path", "{{outputs.next_step}}"
+        ]
+
+  - name: formbot-qsc-component
+    description: "Submits the RMA to QSC's vendor portal"
+    inputs:
+      - name: rma_id
+        type: String
+    outputs:
+      - name: vendor_rma_id
+        type: String
+    implementation:
+      container:
+        image: "gcr.io/claimr/formbot-qsc-component:latest"
+        command: ["python", "-m", "pipelines.components.formbot_qsc"]
+        args: [
+          "--rma_id", "{{inputs.rma_id}}",
+          "--vendor_rma_id_output_path", "{{outputs.vendor_rma_id}}"
+        ]
+
+  - name: echo-component
+    description: "Sends a confirmation email to the technician"
+    inputs:
+      - name: rma_id
+        type: String
+      - name: vendor_rma_id
+        type: String
+    outputs:
+      - name: success
+        type: Boolean
+    implementation:
+      container:
+        image: "gcr.io/claimr/echo-component:latest"
+        command: ["python", "-m", "pipelines.components.echo"]
+        args: [
+          "--rma_id", "{{inputs.rma_id}}",
+          "--vendor_rma_id", "{{inputs.vendor_rma_id}}",
+          "--success_output_path", "{{outputs.success}}"
+        ]
+
+graph:
+  tasks:
+    - name: reqwest
+      component: reqwest-component
+      inputs:
+        serial_number: "{{inputs.serial_number}}"
+        model_number: "{{inputs.model_number}}"
+        issue_description: "{{inputs.issue_description}}"
+        vendor: "{{inputs.vendor}}"
+        submitted_by: "{{inputs.submitted_by}}"
+
+    - name: traceroute
+      component: traceroute-component
+      inputs:
+        rma_id: "{{tasks.reqwest.outputs.rma_id}}"
+      depends_on:
+        - reqwest
+
+    - name: formbot-qsc
+      component: formbot-qsc-component
+      inputs:
+        rma_id: "{{tasks.reqwest.outputs.rma_id}}"
+      depends_on:
+        - traceroute
+      # In a more advanced version, we would conditionally run this
+      # based on the traceroute.next_step output
+
+    - name: echo
+      component: echo-component
+      inputs:
+        rma_id: "{{tasks.reqwest.outputs.rma_id}}"
+        vendor_rma_id: "{{tasks.formbot-qsc.outputs.vendor_rma_id}}"
+      depends_on:
+        - formbot-qsc
+
+  outputs:
+    rma_id: "{{tasks.reqwest.outputs.rma_id}}"
+    vendor_rma_id: "{{tasks.formbot-qsc.outputs.vendor_rma_id}}"
+    success: "{{tasks.echo.outputs.success}}"
