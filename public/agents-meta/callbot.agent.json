@@ -1,0 +1,12 @@
+{
+  "name": "callbot",
+  "version": "1.0.0",
+  "description": "Automates vendor phone calls to obtain RMA numbers.",
+  "capabilities": ["dial", "navigate_ivr", "capture_rma", "log"],
+  "entryPoint": "agents/callbot/handleInput.ts",
+  "introspectRoute": "/api/agents/callbot/introspect",
+  "schema": "/public/agents-meta/callbot.schema.json",
+  "security": {
+    "auth": "token"
+  }
+}

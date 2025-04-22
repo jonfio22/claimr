@@ -3,7 +3,7 @@
  * Handles RMA form submissions for Epson equipment via API integration
  */
 
-import { RMARecord, FormSubmissionResult } from './types';
+import { RMARecord, FormSubmissionResult, VendorModuleMeta } from './types';
 
 // Load environment variables
 declare const process: { env: { [key: string]: string | undefined } };
@@ -15,11 +15,23 @@ if (!EPSON_API_KEY) {
 }
 
 /**
+ * Epson module metadata with phone requirement flag
+ */
+export const epsonModule: VendorModuleMeta = {
+  name: 'Epson',
+  requiresPhone: true,
+  submit: async (data) => {
+    const result = await submitForm(data);
+    return { rmaNumber: result.vendor_rma_id };
+  }
+};
+
+/**
  * Submit RMA form to Epson's API endpoint
  * @param data RMA record data from Supabase
  * @returns Object containing the vendor RMA ID
  */
-export async function submitForm(data: RMARecord): Promise<FormSubmissionResult> {
+async function submitForm(data: RMARecord): Promise<FormSubmissionResult> {
   console.log(`[formbot:epson] Processing RMA submission for ${data.serial_number}`);
   
   try {

@@ -161,6 +161,13 @@ EPSON_API_URL=https://api.epson.com/support/rma
      }'
    ```
 
+### CallBot Setup
+
+1. Add Twilio **and Resend** credentials to `.env`  
+2. Run `supabase db push` to add `call_sid / rma_number` columns  
+3. Deploy and grant your technicians the `CLAIMR_API_TOKEN`  
+4. FormBot now triggers Echo to send confirmation emails automatically.
+
 ### Vertex AI Deployment
 
 1. Build the container images for each pipeline component:

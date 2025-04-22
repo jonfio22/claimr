@@ -6,11 +6,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 import { resend } from '@/lib/resendClient';
+import { validateToken } from '../../lib/validateToken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Only POST allowed' });
   }
+  if (!(await validateToken(req, res))) return;
 
   const { id, vendor_rma_id } = req.body;
 

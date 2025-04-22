@@ -62,6 +62,13 @@ CREATE TABLE IF NOT EXISTS vendor_status (
 CREATE INDEX IF NOT EXISTS idx_vendor_status_rma ON vendor_status(rma_id);
 CREATE INDEX IF NOT EXISTS idx_vendor_status_vendor ON vendor_status(vendor_id);
 
+-- === CallBot support fields (idempotent) ===
+ALTER TABLE IF EXISTS vendor_status
+  ADD COLUMN IF NOT EXISTS call_sid TEXT,
+  ADD COLUMN IF NOT EXISTS rma_number TEXT,
+  ADD COLUMN IF NOT EXISTS transcript_url TEXT;
+CREATE INDEX IF NOT EXISTS idx_vendor_status_call_sid ON vendor_status(call_sid);
+
 -- Function to update the updated_at column
 CREATE OR REPLACE FUNCTION update_modified_column()
 RETURNS TRIGGER AS $$

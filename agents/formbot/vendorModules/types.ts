@@ -16,3 +16,9 @@ export interface RMARecord {
 export interface FormSubmissionResult {
   vendor_rma_id: string;
 }
+
+export interface VendorModuleMeta {
+  name: string;
+  submit: (payload: any) => Promise<{ rmaNumber: string }>;
+  requiresPhone?: boolean; // New flag for CallBot integration
+}

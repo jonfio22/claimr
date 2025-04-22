@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CallBotInput",
+  "type": "object",
+  "properties": {
+    "vendor": { "type": "string" },
+    "technicianPhone": { "type": "string", "pattern": "^\\+?[1-9]\\d{1,14}$" },
+    "rmaPayload": { "type": "object" }
+  },
+  "required": ["vendor", "rmaPayload"]
+}
